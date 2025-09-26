@@ -27,4 +27,3 @@ def preprocess_penguin_data(filepath):
 
     return X, y
 
-
