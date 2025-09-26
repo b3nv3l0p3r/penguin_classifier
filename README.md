@@ -31,6 +31,37 @@ The dataset includes the following features:
 - Categorical variables `island` and `sex` are converted to numerical features using one-hot encoding.
 - Original data files remain unchanged; preprocessing is handled in a dedicated function within the `one_hot_encoder.py` module.
 
+### Original data:
+| species | island    | culmen_length_mm | culmen_depth_mm | flipper_length_mm | body_mass_g | sex    |
+|---------|-----------|------------------|-----------------|-------------------|-------------|--------|
+| Adelie  | Torgersen | 39.1             | 18.7            | 181.0             | 3750.0      | MALE   |
+| Adelie  | Torgersen | 39.5             | 17.4            | 186.0             | 3800.0      | FEMALE |
+| Adelie  | Torgersen | 40.3             | 18.0            | 195.0             | 3250.0      | FEMALE |
+| Adelie  | Torgersen | NaN              | NaN             | NaN               | NaN         | NaN    |
+| Adelie  | Torgersen | 36.7             | 19.3            | 193.0             | 3450.0      | FEMALE |
+
+### Cleaned and encoded data:
+#### Feature table:
+| Index | culmen_length_mm | culmen_depth_mm | flipper_length_mm | body_mass_g | island_Biscoe | island_Dream | island_Torgersen | sex_. | sex_FEMALE | sex_MALE |
+|-------|------------------|-----------------|-------------------|-------------|---------------|--------------|------------------|-------|------------|----------|
+| 0     | 39.1             | 18.7            | 181.0             | 3750.0      | False         | False        | True             | False | False      | True     |
+| 1     | 39.5             | 17.4            | 186.0             | 3800.0      | False         | False        | True             | False | True       | False    |
+| 2     | 40.3             | 18.0            | 195.0             | 3250.0      | False         | False        | True             | False | True       | False    |
+| 4     | 36.7             | 19.3            | 193.0             | 3450.0      | False         | False        | True             | False | True       | False    |
+| 5     | 39.3             | 20.6            | 190.0             | 3650.0      | False         | False        | True             | False | False      | True     |
+
+
+#### Target table:
+| Index | species |
+|-------|---------|
+| 0     | Adelie  |
+| 1     | Adelie  |
+| 2     | Adelie  |
+| 4     | Adelie  |
+| 5     | Adelie  |
+
+
+
 ## Modular Project Structure
 
 - `one_hot_encoder.py`: Contains the `preprocess_penguin_data(filepath)` function which loads, cleans, and encodes the dataset.
@@ -50,13 +81,13 @@ The dataset includes the following features:
 - Achieved high accuracy (~99%).
 - Balanced classification performance across the penguin species.
 
-### Sample Dataset Preview
-
-![Penguin Dataset Preview](results_confusion_matrix.png)
 
 ## Visualization
 
-- Confusion matrix visualization using `sklearn.metrics.ConfusionMatrixDisplay` to show true vs. predicted classifications.
+Confusion matrix visualization using `sklearn.metrics.ConfusionMatrixDisplay` to show true vs. predicted classifications:
+
+![Penguin Dataset Preview](results_confusion_matrix.png)
+
 
 ## Installation and Requirements
 
@@ -68,6 +99,3 @@ Required Python libraries (installation via pip):
 - numpy
 - scikit-learn
 - matplotlib
-
-
-
