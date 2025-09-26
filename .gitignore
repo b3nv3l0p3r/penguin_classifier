@@ -1,0 +1,5 @@
+# Ignore Penguinclassifier folder
+Penguinclassifier/
+
+# Ignore Python bytecode cache
+__pycache__/
