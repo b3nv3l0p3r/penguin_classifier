@@ -3,3 +3,7 @@ Penguinclassifier/
 
 # Ignore Python bytecode cache
 __pycache__/
+
+/venv
+.venv
+venv/
