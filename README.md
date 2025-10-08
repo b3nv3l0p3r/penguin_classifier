@@ -101,6 +101,12 @@ Required Python libraries (installation via pip):
 - matplotlib
 - streamlit
 
+For installing the packages, just enter in your terminal:
+
+``
+pip install -r requirements.txt
+``
+
 ## Contributors
 
 - Bendix Greiner
