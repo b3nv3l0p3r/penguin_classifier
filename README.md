@@ -99,3 +99,10 @@ Required Python libraries (installation via pip):
 - numpy
 - scikit-learn
 - matplotlib
+- streamlit
+
+## Contributors
+
+- Bendix Greiner
+- Maurice Baumann
+- Pascal Grimm
