@@ -1,4 +1,4 @@
-# b3nv3l0p3r/penguin_classifier
+# Random Forest Penguin Classification Project
 
 ## Project Overview
 
