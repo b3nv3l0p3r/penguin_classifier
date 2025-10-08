@@ -1,17 +1,19 @@
-# Random Forest Penguin Classification Project
+# b3nv3l0p3r/penguin_classifier
 
 ## Project Overview
 
-This project aims to build a Random Forest classification model to identify penguin species based on physical measurements. The dataset is sourced from the popular Palmer Penguins dataset.
+This project aims to build classification models to identify penguin species based on physical measurements from the Palmer Penguins dataset. It supports both Random Forest and Decision Tree classifiers, allowing for comparison between ensemble and interpretable single-tree approaches.
 
 ### Contents
-- [Data Description](#data-description)
-- [Data Preprocessing](#data-preprocessing)
-- [Modular Project Structure](#modular-project-structure)
-- [Machine Learning Workflow](#machine-learning-workflow)
-- [Model Performance](#model-performance)
-- [Visualization](#visualization)
-- [Installation and Requirements](#installation-and-requirements)
+
+- Data Description
+- Data Preprocessing
+- Modular Project Structure
+- Machine Learning Workflow
+- Classifier Options
+- Model Performance
+- Visualization
+- Installation and Requirements
 
 ## Data Description
 
@@ -32,62 +34,71 @@ The dataset includes the following features:
 - Original data files remain unchanged; preprocessing is handled in a dedicated function within the `one_hot_encoder.py` module.
 
 ### Original data:
-| species | island    | culmen_length_mm | culmen_depth_mm | flipper_length_mm | body_mass_g | sex    |
-|---------|-----------|------------------|-----------------|-------------------|-------------|--------|
-| Adelie  | Torgersen | 39.1             | 18.7            | 181.0             | 3750.0      | MALE   |
-| Adelie  | Torgersen | 39.5             | 17.4            | 186.0             | 3800.0      | FEMALE |
-| Adelie  | Torgersen | 40.3             | 18.0            | 195.0             | 3250.0      | FEMALE |
-| Adelie  | Torgersen | NaN              | NaN             | NaN               | NaN         | NaN    |
-| Adelie  | Torgersen | 36.7             | 19.3            | 193.0             | 3450.0      | FEMALE |
+
+|species|island|culmen_length_mm|culmen_depth_mm|flipper_length_mm|body_mass_g|sex|
+|--|--|--|--|--|--|--|
+|Adelie|Torgersen|39.1|18.7|181.0|3750.0|MALE|
+|Adelie|Torgersen|39.5|17.4|186.0|3800.0|FEMALE|
+|Adelie|Torgersen|40.3|18.0|195.0|3250.0|FEMALE|
+|Adelie|Torgersen|NaN|NaN|NaN|NaN|NaN|
+|Adelie|Torgersen|36.7|19.3|193.0|3450.0|FEMALE|
 
 ### Cleaned and encoded data:
-#### Feature table:
-| Index | culmen_length_mm | culmen_depth_mm | flipper_length_mm | body_mass_g | island_Biscoe | island_Dream | island_Torgersen | sex_. | sex_FEMALE | sex_MALE |
-|-------|------------------|-----------------|-------------------|-------------|---------------|--------------|------------------|-------|------------|----------|
-| 0     | 39.1             | 18.7            | 181.0             | 3750.0      | False         | False        | True             | False | False      | True     |
-| 1     | 39.5             | 17.4            | 186.0             | 3800.0      | False         | False        | True             | False | True       | False    |
-| 2     | 40.3             | 18.0            | 195.0             | 3250.0      | False         | False        | True             | False | True       | False    |
-| 4     | 36.7             | 19.3            | 193.0             | 3450.0      | False         | False        | True             | False | True       | False    |
-| 5     | 39.3             | 20.6            | 190.0             | 3650.0      | False         | False        | True             | False | False      | True     |
 
+#### Feature table:
+
+|Index|culmen_length_mm|culmen_depth_mm|flipper_length_mm|body_mass_g|island_Biscoe|island_Dream|island_Torgersen|sex_.|sex_FEMALE|sex_MALE|
+|--|--|--|--|--|--|--|--|--|--|--|
+|0|39.1|18.7|181.0|3750.0|False|False|True|False|False|True|
+|1|39.5|17.4|186.0|3800.0|False|False|True|False|True|False|
+|2|40.3|18.0|195.0|3250.0|False|False|True|False|True|False|
+|4|36.7|19.3|193.0|3450.0|False|False|True|False|True|False|
+|5|39.3|20.6|190.0|3650.0|False|False|True|False|False|True|
 
 #### Target table:
-| Index | species |
-|-------|---------|
-| 0     | Adelie  |
-| 1     | Adelie  |
-| 2     | Adelie  |
-| 4     | Adelie  |
-| 5     | Adelie  |
 
-
+|Index|species|
+|--|--|
+|0|Adelie|
+|1|Adelie|
+|2|Adelie|
+|4|Adelie|
+|5|Adelie|
 
 ## Modular Project Structure
 
 - `one_hot_encoder.py`: Contains the `preprocess_penguin_data(filepath)` function which loads, cleans, and encodes the dataset.
 - `data_inspector.py`: Loads the processed data using the encoder and provides utilities for data inspection (e.g., displaying the first rows).
-- `random_forest.py`: Implements model training, prediction, evaluation, and visualization.
+- `random_forest.py`: Implements model training, prediction, evaluation, and visualization using Random Forest.
+- `decision_tree.py`: Implements model training, prediction, evaluation, and visualization using Decision Tree.
 
 ## Machine Learning Workflow
 
 1. Load and preprocess data using `preprocess_penguin_data`.
 2. Split data into training and testing sets.
-3. Train a Random Forest classifier (`n_estimators=100`, using appropriate number of CPU cores).
+3. Train a classifier (Random Forest or Decision Tree) using the dedicated script.
 4. Predict on test data.
 5. Evaluate performance using accuracy, precision, recall, F1-score, and visualize results with a confusion matrix.
 
+## Classifier Options
+
+- Random Forest (`random_forest.py`): An ensemble method that improves predictive accuracy and robustness.
+- Decision Tree (`decision_tree.py`) : A simple, interpretable model using a single tree structure.
+
+Both classifiers are supported; select which to train and evaluate by running the corresponding script.
+
 ## Model Performance
 
-- Achieved high accuracy (~99%).
-- Balanced classification performance across the penguin species.
-
+- Random Forest achieves high accuracy (~99%).
+- Decision Tree offers interpretable results with slightly lower accuracy.
+- Balanced classification performance across penguin species in both models.
 
 ## Visualization
 
-Confusion matrix visualization using `sklearn.metrics.ConfusionMatrixDisplay` to show true vs. predicted classifications:
+Confusion matrix visualization using `sklearn.metrics.ConfusionMatrixDisplay` to show true vs. predicted classifications.
 
-![Penguin Dataset Preview](results_confusion_matrix.png)
-
+![Penguin Dataset Preview](results_confusion_matrix_decision_tree.png)
+![Penguin Dataset Preview](results_confusion_matrix_random_forrest.png)
 
 ## Installation and Requirements
 
@@ -99,3 +110,5 @@ Required Python libraries (installation via pip):
 - numpy
 - scikit-learn
 - matplotlib
+
+---
