@@ -112,3 +112,33 @@ Required Python libraries (installation via pip):
 - matplotlib
 
 ---
+## How to setup the Modell
+1. Create an Virtual Env
+
+``
+python -3.12 -m venv venv
+``
+
+2. Activate venv
+
+``
+.\venv\Scripts\activate
+``
+
+3. Install required packages
+
+``
+pip install -r requirements.txt
+``
+
+4. Start Streamlit-App
+
+``
+streamlit run .\1_Erkennung.py
+``
+
+## Contributors
+
+- Bendix Greiner
+- Maurice Baumann
+- Pascal Grimm

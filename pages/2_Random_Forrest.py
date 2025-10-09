@@ -50,7 +50,7 @@ if st.button("Modell jetzt trainieren"):
         st.success("Daten erfolgreich vorbereitet.")
 
         # Teile die Daten in Trainings- und Testsets auf
-        x_train, x_test, y_train, y_test = train_test_split(features, output, test_size=0.8, random_state=42)
+        x_train, x_test, y_train, y_test = train_test_split(features, output, test_size=0.2, random_state=42)
         
         st.info("Trainiere das Random Forest Modell...")
         
@@ -63,16 +63,16 @@ if st.button("Modell jetzt trainieren"):
         y_pred = rfc.predict(x_test)
         score = round(accuracy_score(y_pred, y_test), 2)
         
-        st.success(f"Modell erfolgreich trainiert! Genauigkeit: {score}")
+        st.success(f"Modell erfolgreich trainiert! Genauigkeit: {score*100} %")
 
         st.info("Speichere das trainierte Modell und die Output-Klassen...")
         
         # Speichere das Modell
-        with open('rfc_penguin.pkl', 'wb') as f:
+        with open('datasets/rfc_penguin.pkl', 'wb') as f:
             pickle.dump(rfc, f)
             
         # Speichere die Zuordnung der Pinguin-Arten
-        with open('output_penguin.pkl', 'wb') as f:
+        with open('datasets/output_penguin.pkl', 'wb') as f:
             pickle.dump(uniques, f)
             
         st.success("Modell und Klassen wurden erfolgreich gespeichert! ✅")
