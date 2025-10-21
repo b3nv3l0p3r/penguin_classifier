@@ -134,7 +134,7 @@ pip install -r requirements.txt
 4. Start Streamlit-App
 
 ``
-streamlit run .\1_Erkennung.py
+streamlit run .\test_page.py
 ``
 
 ## Contributors
