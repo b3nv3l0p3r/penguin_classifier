@@ -11,7 +11,7 @@ st.set_page_config(layout="wide")
 def render_slide_1():
     st.image(
         "https://pplx-res.cloudinary.com/image/upload/v1761051204/pplx_project_search_images/a5db955fa9cca9f3baf6dc0e207a8b545b8b9d1e.png",
-        width=600
+        width=300
     )
     st.title("Machine Learning Workflow am Beispiel der Artenklassifikation")
     st.header("Pinguinarten-Klassifikation mit Random Forest und Decision Tree")
