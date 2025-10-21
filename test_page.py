@@ -17,6 +17,10 @@ st.write("Identifizieren Sie Pinguinarten anhand von körperlichen Messwerten.")
 # Session State & Beispieldaten
 # =========================================================================
 
+# FIX 1: 'analysis_run' merkt sich, ob die Analyse angezeigt werden soll.
+if 'analysis_run' not in st.session_state:
+    st.session_state.analysis_run = False
+    
 # Initialisiere Session State für die Eingabefelder
 if 'culmen_length' not in st.session_state:
     st.session_state.culmen_length = 40.0
@@ -30,36 +34,30 @@ if 'island' not in st.session_state:
     st.session_state.island = "Biscoe"
 if 'sex' not in st.session_state:
     st.session_state.sex = "MALE"
+    
+# Initialisiere State für Modellparameter
+if 'model_type' not in st.session_state:
+    st.session_state.model_type = "Random Forest"
+if 'n_estimators' not in st.session_state:
+    st.session_state.n_estimators = 100
+if 'max_depth' not in st.session_state:
+    st.session_state.max_depth = 5
 
-# Beispieldaten für Pinguine (typische Durchschnittswerte)
 example_data = {
     "Adelie": {
-        'culmen_length': 38.8,
-        'culmen_depth': 18.3,
-        'flipper_length': 190.0,
-        'body_mass': 3700.0,
-        'island': "Torgersen",
-        'sex': "MALE"
+        'culmen_length': 38.8, 'culmen_depth': 18.3, 'flipper_length': 190.0,
+        'body_mass': 3700.0, 'island': "Torgersen", 'sex': "MALE"
     },
     "Gentoo": {
-        'culmen_length': 47.5,
-        'culmen_depth': 14.9,
-        'flipper_length': 217.0,
-        'body_mass': 5000.0,
-        'island': "Biscoe",
-        'sex': "FEMALE"
+        'culmen_length': 47.5, 'culmen_depth': 14.9, 'flipper_length': 217.0,
+        'body_mass': 5000.0, 'island': "Biscoe", 'sex': "FEMALE"
     },
     "Chinstrap": {
-        'culmen_length': 48.8,
-        'culmen_depth': 18.4,
-        'flipper_length': 196.0,
-        'body_mass': 3730.0,
-        'island': "Dream",
-        'sex': "MALE"
+        'culmen_length': 48.8, 'culmen_depth': 18.4, 'flipper_length': 196.0,
+        'body_mass': 3730.0, 'island': "Dream", 'sex': "MALE"
     }
 }
 
-# Callback-Funktion zum Laden von Beispielen in den Session State
 def load_example(species):
     data = example_data[species]
     st.session_state.culmen_length = data['culmen_length']
@@ -68,10 +66,6 @@ def load_example(species):
     st.session_state.body_mass = data['body_mass']
     st.session_state.island = data['island']
     st.session_state.sex = data['sex']
-
-# =========================================================================
-# Daten laden
-# =========================================================================
 
 try:
     X, y = preprocess_penguin_data('penguins_size.csv')
@@ -83,81 +77,57 @@ except FileNotFoundError:
 # Sidebar
 # =========================================================================
 
-# NEU: Sidebar-Sektion für Beispieldaten (außerhalb des Formulars)
 st.sidebar.header("🚀 Beispiel-Pinguine")
-st.sidebar.button(
-    "Adelie-Beispiel laden", 
-    on_click=load_example, 
-    args=("Adelie",), 
-    use_container_width=True
-)
-st.sidebar.button(
-    "Gentoo-Beispiel laden", 
-    on_click=load_example, 
-    args=("Gentoo",), 
-    use_container_width=True
-)
-st.sidebar.button(
-    "Chinstrap-Beispiel laden", 
-    on_click=load_example, 
-    args=("Chinstrap",), 
-    use_container_width=True
-)
+st.sidebar.button("Adelie-Beispiel laden", on_click=load_example, args=("Adelie",), use_container_width=True)
+st.sidebar.button("Gentoo-Beispiel laden", on_click=load_example, args=("Gentoo",), use_container_width=True)
+st.sidebar.button("Chinstrap-Beispiel laden", on_click=load_example, args=("Chinstrap",), use_container_width=True)
 st.sidebar.divider()
 
-# Vorhandenes Formular für die Eingaben
 with st.sidebar.form(key='eingabe_formular'):
     st.header("📊 Pinguin-Messwerte")
 
-    # Listen für Selectbox-Optionen
     island_options = ["Biscoe", "Dream", "Torgersen"]
     sex_options = ["MALE", "FEMALE"]
 
-    # Widgets verwenden jetzt 'st.session_state' für ihre Standardwerte
-    culmen_length = st.slider(
-        "Schnabellänge (mm)", 30.0, 60.0, 
-        st.session_state.culmen_length, 0.1
-    )
-    culmen_depth = st.slider(
-        "Schnabeltiefe (mm)", 13.0, 22.0, 
-        st.session_state.culmen_depth, 0.1
-    )
-    flipper_length = st.slider(
-        "Flossenlänge (mm)", 170.0, 230.0, 
-        st.session_state.flipper_length, 1.0
-    )
-    body_mass = st.slider(
-        "Körpermasse (g)", 2500.0, 6500.0, 
-        st.session_state.body_mass, 50.0
-    )
-    island = st.selectbox(
-        "Insel", island_options, 
-        index=island_options.index(st.session_state.island)
-    )
-    sex = st.selectbox(
-        "Geschlecht", sex_options, 
-        index=sex_options.index(st.session_state.sex)
-    )
+    # Widgets lesen ihren Standardwert aus dem session_state
+    culmen_length_form = st.slider("Schnabellänge (mm)", 30.0, 60.0, st.session_state.culmen_length, 0.1)
+    culmen_depth_form = st.slider("Schnabeltiefe (mm)", 13.0, 22.0, st.session_state.culmen_depth, 0.1)
+    flipper_length_form = st.slider("Flossenlänge (mm)", 170.0, 230.0, st.session_state.flipper_length, 1.0)
+    body_mass_form = st.slider("Körpermasse (g)", 2500.0, 6500.0, st.session_state.body_mass, 50.0)
+    island_form = st.selectbox("Insel", island_options, index=island_options.index(st.session_state.island))
+    sex_form = st.selectbox("Geschlecht", sex_options, index=sex_options.index(st.session_state.sex))
 
     st.header("🤖 Modell-Einstellungen")
-    model_type = st.selectbox("Modell-Typ", ["Random Forest", "Entscheidungsbaum"])
+    model_type_form = st.selectbox("Modell-Typ", ["Random Forest", "Entscheidungsbaum"], index=0 if st.session_state.model_type == "Random Forest" else 1)
 
-    if model_type == "Random Forest":
-        n_estimators = st.slider("Anzahl der Bäume", 10, 200, 100, 10)
-        max_depth = st.slider("Maximale Baumtiefe", 3, 10, 5, 1)
-        model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=42)
+    if model_type_form == "Random Forest":
+        n_estimators_form = st.slider("Anzahl der Bäume", 10, 200, st.session_state.n_estimators, 10)
+        max_depth_form = st.slider("Maximale Baumtiefe", 3, 10, st.session_state.max_depth, 1)
     else:
-        max_depth = st.slider("Maximale Baumtiefe", 3, 10, 5, 1)
-        model = DecisionTreeClassifier(max_depth=max_depth, random_state=42)
+        n_estimators_form = 100 # Standardwert, wird nicht verwendet
+        max_depth_form = st.slider("Maximale Baumtiefe", 3, 10, st.session_state.max_depth, 1)
     
     submitted = st.form_submit_button("Starte Analyse und Vorhersage")
+
+# FIX 2: Wenn das Formular abgeschickt wird...
+if submitted:
+    # ...speichern wir alle Werte aus dem Formular im session_state...
+    st.session_state.culmen_length = culmen_length_form
+    st.session_state.culmen_depth = culmen_depth_form
+    st.session_state.flipper_length = flipper_length_form
+    st.session_state.body_mass = body_mass_form
+    st.session_state.island = island_form
+    st.session_state.sex = sex_form
+    st.session_state.model_type = model_type_form
+    st.session_state.n_estimators = n_estimators_form
+    st.session_state.max_depth = max_depth_form
+    
+    # ...und setzen das Flag, dass die Analyse laufen soll.
+    st.session_state.analysis_run = True
 
 
 def create_input_dataframe(culmen_length, culmen_depth, flipper_length, 
                            body_mass, island, sex, feature_columns):
-    """
-    Erstellt einen Input-DataFrame mit ALLEN erwarteten Features.
-    """
     input_data = pd.DataFrame(0, index=[0], columns=feature_columns, dtype=float)
     input_data['culmen_length_mm'] = culmen_length
     input_data['culmen_depth_mm'] = culmen_depth
@@ -177,14 +147,28 @@ def create_input_dataframe(culmen_length, culmen_depth, flipper_length,
 # =========================================================================
 # Haupt-Analyseblock
 # =========================================================================
-if submitted:
+
+# FIX 3: Die Analyse wird jetzt ausgeführt, wenn das Flag im session_state True ist.
+# Das bleibt auch True, wenn der Slider in Tab 3 bewegt wird.
+if st.session_state.analysis_run:
     
+    # Modell-Objekt basierend auf Werten im session_state erstellen
+    if st.session_state.model_type == "Random Forest":
+        model = RandomForestClassifier(n_estimators=st.session_state.n_estimators, max_depth=st.session_state.max_depth, random_state=42)
+        n_estimators = st.session_state.n_estimators # für Anzeige-Logik
+        model_type = "Random Forest"
+    else:
+        model = DecisionTreeClassifier(max_depth=st.session_state.max_depth, random_state=42)
+        n_estimators = 1 # Dummy-Wert
+        model_type = "Entscheidungsbaum"
+
     with st.spinner("Modell wird trainiert..."):
         model.fit(X, y)
 
+    # Input-Daten basierend auf Werten im session_state erstellen
     input_data = create_input_dataframe(
-        culmen_length, culmen_depth, flipper_length, 
-        body_mass, island, sex, 
+        st.session_state.culmen_length, st.session_state.culmen_depth, st.session_state.flipper_length, 
+        st.session_state.body_mass, st.session_state.island, st.session_state.sex, 
         X.columns
     )
 
@@ -288,11 +272,15 @@ if submitted:
             st.subheader("Einzelne Bäume des Forests erkunden")
             st.write(f"Ihr Random Forest enthält {n_estimators} Entscheidungsbäume. Jeder Baum sieht die Daten leicht unterschiedlich.")
             
+            # FIX 4: Dieser Slider löst jetzt einen Rerun aus,
+            # aber da 'analysis_run' True bleibt, wird die Seite
+            # einfach mit dem neuen Slider-Wert neu gezeichnet.
             tree_index = st.slider(
                 "Baum zur Visualisierung auswählen", 
                 0, 
                 len(model.estimators_) - 1, 
                 0,
+                key="tree_index_slider", # Wichtig: Ein key speichert den Wert
                 help="Jeder Baum im Forest kann unterschiedliche Entscheidungen treffen"
             )
             
@@ -354,24 +342,19 @@ st.header("📖 Wie man den Entscheidungsbaum liest")
 with st.expander("Klicken Sie hier, um zu erfahren, wie man die Baumvisualisierung interpretiert"):
     st.markdown("""
     ### Die Baumstruktur verstehen
-    
     Jeder **Knoten** (Box) im Baum repräsentiert einen Entscheidungspunkt oder ein Ergebnis:
-    
     #### 🔵 Interne Knoten (Entscheidungspunkte)
     - **Bedingung**: Zeigt das Merkmal und den Schwellenwert (z.B. "flipper_length_mm <= 206.5")
     - **Gini/Impurity (Unreinheit)**: Misst, wie gemischt die Klassen an diesem Knoten sind (niedriger = reiner)
     - **Samples**: Anzahl der Trainingsbeispiele, die diesen Knoten erreicht haben
     - **Value**: Verteilung der Klassen (z.B. [Adelie, Gentoo, Chinstrap])
     - **Class**: Die Mehrheitsklasse an diesem Knoten
-    
     #### 🍃 Blattknoten (Endgültige Entscheidungen)
     - Endknoten, an denen Vorhersagen getroffen werden
     - Die Farbintensität zeigt die Konfidenz der Vorhersage an
     - Stärkere Farbe = sicherere Vorhersage
-    
     #### 🎨 Farbkodierung
     - Die Farben werden den Klassen (z.B. Adelie, Gentoo, Chinstrap) zugeordnet, um die Mehrheit in jedem Knoten visuell darzustellen.
-    
     #### 📊 Entscheidungspfad
     1. Beginnen Sie am **Wurzelknoten** (oben)
     2. Folgen Sie den Ästen basierend auf Ihren Merkmalswerten
@@ -379,11 +362,9 @@ with st.expander("Klicken Sie hier, um zu erfahren, wie man die Baumvisualisieru
     4. **Rechter Ast**: Bedingung ist FALSCH
     5. Fahren Sie fort, bis Sie einen **Blattknoten** (unten) erreichen
     6. Die Klasse des Blattknotens ist die Vorhersage
-    
     #### 💡 Beispiel
     Wenn Flossenlänge ≤ 206.5 mm → gehe nach links  
     Wenn Flossenlänge > 206.5 mm → gehe nach rechts
-    
     ### Merkmalswichtigkeit
     Merkmale, die weiter oben im Baum erscheinen, sind im Allgemeinen wichtiger für die Klassifizierung.
     """)
