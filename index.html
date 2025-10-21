@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning Workflow - Pinguinarten-Klassifikation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Navigation Controls -->
+        <div class="nav-controls">
+            <button class="nav-btn prev-btn" id="prevBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+                Zurück
+            </button>
+            <div class="slide-counter">
+                <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+            </div>
+            <button class="nav-btn next-btn" id="nextBtn">
+                Weiter
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- Slides Container -->
+        <div class="slides-container" id="slidesContainer">
+            
+            <!-- Slide 1: Title Slide -->
+            <div class="slide active" data-slide="1">
+                <div class="slide-content title-slide">
+                    <div class="penguin-hero">
+                        <img src="https://pplx-res.cloudinary.com/image/upload/v1761051204/pplx_project_search_images/a5db955fa9cca9f3baf6dc0e207a8b545b8b9d1e.png" alt="Penguin species comparison" class="hero-image">
+                    </div>
+                    <h1>Machine Learning Workflow am Beispiel der Artenklassifikation</h1>
+                    <h2>Pinguinarten-Klassifikation mit Random Forest und Decision Tree</h2>
+                    <div class="contributors">
+                        <h3>Projektteam:</h3>
+                        <ul>
+                            <li>Bendix Greiner</li>
+                            <li>Maurice Baumann</li>
+                            <li>Pascal Grimm</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Kontext und Rolle -->
+            <div class="slide" data-slide="2">
+                <div class="slide-content">
+                    <h1>Kontext und Rolle</h1>
+                    <div class="content-grid">
+                        <div class="card">
+                            <h3>🔬 Unsere Rolle</h3>
+                            <p>Forschungsgruppe als Anwender von Machine Learning</p>
+                        </div>
+                        <div class="card">
+                            <h3>🎯 Projektziel</h3>
+                            <p>Automatische Klassifikation von Pinguinarten</p>
+                        </div>
+                        <div class="card">
+                            <h3>📚 Projektumfang</h3>
+                            <p>Vermittlung eines ML-Projekts von der Problemdefinition über Modellierung bis zur Evaluation</p>
+                        </div>
+                        <div class="card">
+                            <h3>📊 Datenbasis</h3>
+                            <p>Palmer Penguins Datensatz zur praktischen Veranschaulichung</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Decision Tree Theory -->
+            <div class="slide" data-slide="3">
+                <div class="slide-content">
+                    <h1>Theoretischer Teil: Entscheidungsbaum</h1>
+                    <h2>Decision Tree</h2>
+                    <div class="theory-content">
+                        <div class="definition-box">
+                            <h3>Definition</h3>
+                            <p>ML-Modell mit Baumstruktur für Vorhersagen</p>
+                        </div>
+                        
+                        <div class="two-column">
+                            <div class="column">
+                                <h3>Struktur</h3>
+                                <ul>
+                                    <li>Knoten repräsentieren Entscheidungsregeln basierend auf Feature-Werten</li>
+                                    <li>Blätter stehen für Zielklassen (Kategorien)</li>
+                                </ul>
+                                
+                                <h3>✅ Vorteile</h3>
+                                <ul class="advantages">
+                                    <li>Einfach interpretierbar</li>
+                                    <li>Visualisierbar</li>
+                                    <li>Transparent</li>
+                                </ul>
+                            </div>
+                            <div class="column">
+                                <div class="tree-diagram">
+                                    <div class="tree-node root">Flipper Length < 206.5mm?</div>
+                                    <div class="tree-branches">
+                                        <div class="branch left">
+                                            <div class="tree-node">Culmen Length < 43.35mm?</div>
+                                            <div class="tree-leaves">
+                                                <div class="leaf">Adelie</div>
+                                                <div class="leaf">Chinstrap</div>
+                                            </div>
+                                        </div>
+                                        <div class="branch right">
+                                            <div class="leaf large">Gentoo</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h3>⚠️ Nachteile</h3>
+                                <ul class="disadvantages">
+                                    <li>Neigung zu Overfitting bei komplexen Daten</li>
+                                    <li>Erfordert Pruning zur Regularisierung</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Random Forest Theory -->
+            <div class="slide" data-slide="4">
+                <div class="slide-content">
+                    <h1>Theoretischer Teil: Random Forest</h1>
+                    <div class="theory-content">
+                        <div class="definition-box">
+                            <h3>Definition</h3>
+                            <p>Ensemble-Verfahren aus vielen Entscheidungsbäumen</p>
+                        </div>
+                        
+                        <div class="forest-visualization">
+                            <h3>Ensemble-Prozess</h3>
+                            <div class="forest-diagram">
+                                <div class="trees-row">
+                                    <div class="mini-tree">🌲 Tree 1</div>
+                                    <div class="mini-tree">🌲 Tree 2</div>
+                                    <div class="mini-tree">🌲 Tree 3</div>
+                                    <div class="mini-tree">🌲 ...</div>
+                                    <div class="mini-tree">🌲 Tree n</div>
+                                </div>
+                                <div class="arrow-down">⬇</div>
+                                <div class="aggregation">Mehrheitsentscheidung</div>
+                                <div class="arrow-down">⬇</div>
+                                <div class="result">Finale Vorhersage</div>
+                            </div>
+                        </div>
+                        
+                        <div class="two-column">
+                            <div class="column">
+                                <h3>Prozess</h3>
+                                <ul>
+                                    <li>Jeder Baum wird auf unterschiedlichen Datenstichproben trainiert (Bootstrapping)</li>
+                                    <li>Aggregation der Baumvorhersagen zu robusterer Gesamtausgabe</li>
+                                </ul>
+                            </div>
+                            <div class="column">
+                                <h3>✅ Vorteile</h3>
+                                <ul class="advantages">
+                                    <li>Höhere Genauigkeit</li>
+                                    <li>Robustheit gegen Overfitting</li>
+                                    <li>Schätzung von Feature-Wichtigkeiten</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: CRISP-DM Process -->
+            <div class="slide" data-slide="5">
+                <div class="slide-content">
+                    <h1>CRISP-DM: Standardisierter ML-Prozess</h1>
+                    <h2>Cross-Industry Standard Process for Data Mining</h2>
+                    <div class="crisp-dm-container">
+                        <div class="crisp-phases">
+                            <div class="phase">
+                                <div class="phase-number">1</div>
+                                <h3>Business Understanding</h3>
+                                <p>Problemstellung und Ziele definieren</p>
+                            </div>
+                            <div class="phase">
+                                <div class="phase-number">2</div>
+                                <h3>Data Understanding</h3>
+                                <p>Daten explorieren und verstehen</p>
+                            </div>
+                            <div class="phase">
+                                <div class="phase-number">3</div>
+                                <h3>Data Preparation</h3>
+                                <p>Datenaufbereitung und Feature Engineering</p>
+                            </div>
+                            <div class="phase">
+                                <div class="phase-number">4</div>
+                                <h3>Modeling</h3>
+                                <p>Modelle wählen und trainieren</p>
+                            </div>
+                            <div class="phase">
+                                <div class="phase-number">5</div>
+                                <h3>Evaluation</h3>
+                                <p>Modelle bewerten mit Metriken</p>
+                            </div>
+                            <div class="phase">
+                                <div class="phase-number">6</div>
+                                <h3>Deployment</h3>
+                                <p>Modell in Anwendung überführen</p>
+                            </div>
+                        </div>
+                        <div class="iterative-note">
+                            <p><strong>💡 Wichtig:</strong> CRISP-DM ist ein iterativer Prozess - Phasen werden oft wiederholt und verfeinert</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Palmer Penguins Dataset -->
+            <div class="slide" data-slide="6">
+                <div class="slide-content">
+                    <h1>Der Palmer Penguins Datensatz</h1>
+                    <div class="dataset-overview">
+                        <div class="dataset-stats">
+                            <div class="stat-card">
+                                <div class="stat-number">344</div>
+                                <div class="stat-label">Pinguine gesamt</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">3</div>
+                                <div class="stat-label">Arten</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">3</div>
+                                <div class="stat-label">Inseln</div>
+                            </div>
+                        </div>
+                        
+                        <div class="species-breakdown">
+                            <h3>Artenverteilung</h3>
+                            <div class="species-cards">
+                                <div class="species-card adelie">
+                                    <h4>Adelie</h4>
+                                    <div class="count">152</div>
+                                    <div class="percentage">44.2%</div>
+                                </div>
+                                <div class="species-card gentoo">
+                                    <h4>Gentoo</h4>
+                                    <div class="count">124</div>
+                                    <div class="percentage">36.0%</div>
+                                </div>
+                                <div class="species-card chinstrap">
+                                    <h4>Chinstrap</h4>
+                                    <div class="count">68</div>
+                                    <div class="percentage">19.8%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="features-section">
+                            <div class="column">
+                                <h3>Inseln</h3>
+                                <ul class="feature-list">
+                                    <li>Biscoe</li>
+                                    <li>Dream</li>
+                                    <li>Torgersen</li>
+                                </ul>
+                            </div>
+                            <div class="column">
+                                <h3>Features</h3>
+                                <ul class="feature-list">
+                                    <li>culmen_length_mm</li>
+                                    <li>culmen_depth_mm</li>
+                                    <li>flipper_length_mm</li>
+                                    <li>body_mass_g</li>
+                                    <li>island</li>
+                                    <li>sex</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="source-info">
+                            <p><strong>Quelle:</strong> Palmer Station LTER, Antarctica</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Data Preparation -->
+            <div class="slide" data-slide="7">
+                <div class="slide-content">
+                    <h1>Datenvorbereitung</h1>
+                    <h2>Data Preparation</h2>
+                    <div class="preparation-steps">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h3>Bereinigung</h3>
+                            <p>Missing Values entfernt</p>
+                            <div class="detail">Datensatz von 344 → 333 Pinguine nach Bereinigung</div>
+                        </div>
+                        
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h3>Encoding</h3>
+                            <p>One-Hot-Encoding für kategoriale Variablen</p>
+                            <div class="detail">
+                                <ul>
+                                    <li>island → island_Biscoe, island_Dream, island_Torgersen</li>
+                                    <li>sex → sex_Female, sex_Male</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h3>Feature-Transformation</h3>
+                            <p>Von 6 Features zu 10 Spalten nach Encoding</p>
+                            <div class="feature-transformation">
+                                <div class="before">
+                                    <h4>Vorher (6 Features)</h4>
+                                    <ul>
+                                        <li>culmen_length_mm</li>
+                                        <li>culmen_depth_mm</li>
+                                        <li>flipper_length_mm</li>
+                                        <li>body_mass_g</li>
+                                        <li>island</li>
+                                        <li>sex</li>
+                                    </ul>
+                                </div>
+                                <div class="arrow">→</div>
+                                <div class="after">
+                                    <h4>Nachher (10 Spalten)</h4>
+                                    <ul>
+                                        <li>culmen_length_mm</li>
+                                        <li>culmen_depth_mm</li>
+                                        <li>flipper_length_mm</li>
+                                        <li>body_mass_g</li>
+                                        <li>island_Biscoe</li>
+                                        <li>island_Dream</li>
+                                        <li>island_Torgersen</li>
+                                        <li>sex_Female</li>
+                                        <li>sex_Male</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h3>Train-Test-Split</h3>
+                            <p>Aufteilung für valide Evaluation</p>
+                            <div class="detail">80% Training (266) / 20% Test (67)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 8: ML Workflow -->
+            <div class="slide" data-slide="8">
+                <div class="slide-content">
+                    <h1>ML-Workflow: Vom Datensatz zum Modell</h1>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <div class="step-icon">📊</div>
+                            <div class="step-content">
+                                <h3>1. Daten laden</h3>
+                                <p>mit preprocess_penguin_data()</p>
+                                <code>X, y = preprocess_penguin_data(df)</code>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-arrow">⬇</div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-icon">✂️</div>
+                            <div class="step-content">
+                                <h3>2. Train-Test-Split</h3>
+                                <p>Aufteilung in Trainings- und Testdaten</p>
+                                <code>X_train, X_test, y_train, y_test = train_test_split(...)</code>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-arrow">⬇</div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-icon">🤖</div>
+                            <div class="step-content">
+                                <h3>3. Modelltraining</h3>
+                                <p>Random Forest &amp; Decision Tree</p>
+                                <code>rf_model.fit(X_train, y_train)
+dt_model.fit(X_train, y_train)</code>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-arrow">⬇</div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-icon">🎯</div>
+                            <div class="step-content">
+                                <h3>4. Vorhersagen</h3>
+                                <p>Vorhersagen auf Testdaten</p>
+                                <code>y_pred = model.predict(X_test)</code>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-arrow">⬇</div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-icon">📈</div>
+                            <div class="step-content">
+                                <h3>5. Evaluation</h3>
+                                <p>Accuracy, Precision, Recall, F1-Score</p>
+                                <code>accuracy_score(y_test, y_pred)</code>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-arrow">⬇</div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-icon">📊</div>
+                            <div class="step-content">
+                                <h3>6. Visualisierung</h3>
+                                <p>Confusion Matrix</p>
+                                <code>confusion_matrix(y_test, y_pred)</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9: Results -->
+            <div class="slide" data-slide="9">
+                <div class="slide-content">
+                    <h1>Ergebnisse und Erkenntnisse</h1>
+                    <div class="results-container">
+                        <div class="model-comparison">
+                            <div class="model-card rf-card">
+                                <h3>🌲 Random Forest</h3>
+                                <div class="accuracy-score">~99%</div>
+                                <p>Sehr hohe Klassifikationsgenauigkeit durch Ensemble-Methode</p>
+                                <div class="metrics">
+                                    <div class="metric">
+                                        <span class="label">Precision:</span>
+                                        <span class="value">0.99</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="label">Recall:</span>
+                                        <span class="value">0.99</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="label">F1-Score:</span>
+                                        <span class="value">0.99</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="model-card dt-card">
+                                <h3>🌳 Decision Tree</h3>
+                                <div class="accuracy-score">~95%</div>
+                                <p>Einfachere Interpretierbarkeit bei leicht reduzierter Genauigkeit</p>
+                                <div class="metrics">
+                                    <div class="metric">
+                                        <span class="label">Precision:</span>
+                                        <span class="value">0.95</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="label">Recall:</span>
+                                        <span class="value">0.94</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="label">F1-Score:</span>
+                                        <span class="value">0.95</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="confusion-matrix-concept">
+                            <h3>Confusion Matrix Beispiel</h3>
+                            <div class="matrix-table">
+                                <table>
+                                    <tr>
+                                        <td class="header"></td>
+                                        <td class="header">Predicted Adelie</td>
+                                        <td class="header">Predicted Chinstrap</td>
+                                        <td class="header">Predicted Gentoo</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="header">Actual Adelie</td>
+                                        <td class="correct">25</td>
+                                        <td class="incorrect">0</td>
+                                        <td class="incorrect">1</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="header">Actual Chinstrap</td>
+                                        <td class="incorrect">0</td>
+                                        <td class="correct">15</td>
+                                        <td class="incorrect">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="header">Actual Gentoo</td>
+                                        <td class="incorrect">0</td>
+                                        <td class="incorrect">0</td>
+                                        <td class="correct">26</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="conclusion">
+                            <p><strong>💡 Fazit:</strong> Praxisbeispiel zeigt die Leistungsfähigkeit von ML-Algorithmen bei Klassifikationsaufgaben</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 10: Implementation -->
+            <div class="slide" data-slide="10">
+                <div class="slide-content">
+                    <h1>Praktische Umsetzung: Streamlit-App</h1>
+                    <div class="implementation-content">
+                        <div class="github-info">
+                            <h3>🔗 GitHub Repository</h3>
+                            <a href="https://github.com/b3nv3l0p3r/penguin_classifier" target="_blank" class="github-link">
+                                github.com/b3nv3l0p3r/penguin_classifier
+                            </a>
+                        </div>
+                        
+                        <div class="features-demo">
+                            <h3>🚀 App-Features</h3>
+                            <div class="feature-grid">
+                                <div class="feature-item">
+                                    <div class="feature-icon">🎯</div>
+                                    <h4>Interaktive Vorhersage</h4>
+                                    <p>Eingabe von Pinguinmaßen für Live-Klassifikation</p>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">📊</div>
+                                    <h4>Datenvisualisierung</h4>
+                                    <p>Scatter Plots und Verteilungen der Features</p>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">🤖</div>
+                                    <h4>Modelltraining</h4>
+                                    <p>Live-Training und Vergleich verschiedener Modelle</p>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">🎨</div>
+                                    <h4>Confusion Matrix</h4>
+                                    <p>Detaillierte Darstellung der Klassifikationsergebnisse</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tech-stack">
+                            <h3>🛠️ Technologie-Stack</h3>
+                            <div class="tech-list">
+                                <div class="tech-item">
+                                    <span class="tech-name">Python 3.12.4</span>
+                                    <span class="tech-desc">Programmiersprache</span>
+                                </div>
+                                <div class="tech-item">
+                                    <span class="tech-name">scikit-learn</span>
+                                    <span class="tech-desc">Machine Learning Framework</span>
+                                </div>
+                                <div class="tech-item">
+                                    <span class="tech-name">pandas &amp; numpy</span>
+                                    <span class="tech-desc">Datenverarbeitung</span>
+                                </div>
+                                <div class="tech-item">
+                                    <span class="tech-name">matplotlib</span>
+                                    <span class="tech-desc">Datenvisualisierung</span>
+                                </div>
+                                <div class="tech-item">
+                                    <span class="tech-name">Streamlit</span>
+                                    <span class="tech-desc">Web App Framework</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 11: Critical Reflection -->
+            <div class="slide" data-slide="11">
+                <div class="slide-content">
+                    <h1>Kritische Reflexion</h1>
+                    <h2>Wichtige Überlegungen zum ML-Projekt</h2>
+                    <div class="reflection-grid">
+                        <div class="reflection-card">
+                            <div class="reflection-icon">🔍</div>
+                            <h3>Datenqualität</h3>
+                            <p><strong>Aspekt:</strong> Bedeutung von sauberer Vorverarbeitung</p>
+                            <div class="reflection-detail">
+                                <ul>
+                                    <li>Missing Values können Modellleistung stark beeinflussen</li>
+                                    <li>Feature Engineering ist entscheidend für Erfolg</li>
+                                    <li>Datenvalidierung und -bereinigung sind zeitaufwändig aber kritisch</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="reflection-card">
+                            <div class="reflection-icon">📊</div>
+                            <h3>Evaluation</h3>
+                            <p><strong>Aspekt:</strong> Notwendigkeit der Interpretation der Modellleistung</p>
+                            <div class="reflection-detail">
+                                <ul>
+                                    <li>Accuracy allein reicht nicht aus</li>
+                                    <li>Precision, Recall, F1-Score für vollständiges Bild</li>
+                                    <li>Cross-Validation für robuste Bewertung</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="reflection-card">
+                            <div class="reflection-icon">⚠️</div>
+                            <h3>Grenzen</h3>
+                            <p><strong>Aspekt:</strong> Generalisierbarkeit, Overfitting, Datenabhängigkeit</p>
+                            <div class="reflection-detail">
+                                <ul>
+                                    <li>Modelle nur so gut wie die Trainingsdaten</li>
+                                    <li>Bias in Daten führt zu bias in Vorhersagen</li>
+                                    <li>Übertragbarkeit auf andere Kontexte fraglich</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="reflection-card">
+                            <div class="reflection-icon">✅</div>
+                            <h3>Best Practices</h3>
+                            <p><strong>Aspekt:</strong> Reproduzierbarkeit, Dokumentation, transparente Methodik</p>
+                            <div class="reflection-detail">
+                                <ul>
+                                    <li>Code-Dokumentation und Versionskontrolle</li>
+                                    <li>Reproduzierbare Experimente mit festen Seeds</li>
+                                    <li>Transparente Berichterstattung über Methodik</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 12: Summary & Outlook -->
+            <div class="slide" data-slide="12">
+                <div class="slide-content">
+                    <h1>Zusammenfassung &amp; Ausblick</h1>
+                    <div class="summary-content">
+                        <div class="summary-section">
+                            <h3>📋 Zusammenfassung</h3>
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <div class="summary-icon">🎯</div>
+                                    <p>ML ist leistungsfähig für komplexe Klassifikationsprobleme</p>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-icon">🌳</div>
+                                    <p>Decision Trees und Random Forests bieten unterschiedliche Stärken</p>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-icon">⚙️</div>
+                                    <p>Strukturierte Methodik (CRISP-DM) essentiell für erfolgreiche Projekte</p>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-icon">🛠️</div>
+                                    <p>Open-Source-Tools erleichtern Zugang zu ML-Technologien</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="outlook-section">
+                            <h3>🔮 Ausblick</h3>
+                            <div class="outlook-grid">
+                                <div class="outlook-item">
+                                    <div class="outlook-icon">🧬</div>
+                                    <h4>Weitere Anwendungen</h4>
+                                    <p>Biologie und Ökologie: Artenerkennung, Biodiversitätsmonitoring, Habitatanalyse</p>
+                                </div>
+                                <div class="outlook-item">
+                                    <div class="outlook-icon">⚡</div>
+                                    <h4>Modelloptimierung</h4>
+                                    <p>Hyperparameter-Tuning, Neural Networks, Deep Learning für Bilderkennung</p>
+                                </div>
+                                <div class="outlook-item">
+                                    <div class="outlook-icon">🚀</div>
+                                    <h4>Production Deployment</h4>
+                                    <p>Cloud-basierte APIs, Echtzeit-Klassifikation, mobile Anwendungen</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="thank-you">
+                            <h2>Vielen Dank für Ihre Aufmerksamkeit!</h2>
+                            <p>Fragen und Diskussion sind herzlich willkommen</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
