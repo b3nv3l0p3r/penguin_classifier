@@ -1,29 +1,28 @@
-#one_hot_encoder.py
 import pandas as pd
 
 def preprocess_penguin_data(filepath):
     """
-    Cleans and encodes the penguin dataset.
+    Lädt, bereinigt und kodiert (One-Hot-Encoding) den Pinguin-Datensatz.
 
     Args:
-        df (pd.DataFrame): Original data
+        filepath (str): Pfad zur CSV-Datei.
 
     Returns:
-        X (pd.DataFrame): Cleaned and one-hot encoded feature dataframe
-        y (pd.Series): Target variable (penguin species)
+        X (pd.DataFrame): Bereinigter und kodierter DataFrame mit Features.
+        y (pd.Series): Zielvariable (Pinguin-Arten).
     """
-    # reading data and loading the dataframe
+    # Daten einlesen und DataFrame laden
     df = pd.read_csv(filepath)
 
-    # Dropping incomplete data
+    # Zeilen mit fehlenden Werten (NaN) entfernen
     df_clean = df.dropna()
 
-    # Transforming categorical data into numeric values
+    # One-Hot-Encoding für kategoriale Spalten 'island' und 'sex'
     df_encoded = pd.get_dummies(df_clean, columns=['island', 'sex'])
 
-    # Selecting target variable and features
+    # Features (X) sind alle Spalten außer der Zielvariable 'species'
     X = df_encoded.drop(columns=['species'])
+    # Zielvariable (y) ist die Spalte 'species'
     y = df_encoded['species']
 
     return X, y
-

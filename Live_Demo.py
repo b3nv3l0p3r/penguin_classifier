@@ -9,19 +9,18 @@ import io
 
 from one_hot_encoder import preprocess_penguin_data
 
+# Seitenkonfiguration auf "wide" setzen
 st.set_page_config(layout="wide")
 st.title("🐧 Pinguin-Arterkennung")
 st.write("Identifizieren Sie Pinguinarten anhand von körperlichen Messwerten.")
 
-# =========================================================================
-# Session State & Beispieldaten
-# =========================================================================
+# Initialisierung des Session State für die App-Logik und Beispieldaten
 
-# FIX 1: 'analysis_run' merkt sich, ob die Analyse angezeigt werden soll.
+# Flag, um zu steuern, ob die Analyse-Logik ausgeführt wurde
 if 'analysis_run' not in st.session_state:
     st.session_state.analysis_run = False
     
-# Initialisiere Session State für die Eingabefelder
+# Standardwerte für die Eingabefelder im Session State speichern
 if 'culmen_length' not in st.session_state:
     st.session_state.culmen_length = 40.0
 if 'culmen_depth' not in st.session_state:
@@ -35,7 +34,7 @@ if 'island' not in st.session_state:
 if 'sex' not in st.session_state:
     st.session_state.sex = "MALE"
     
-# Initialisiere State für Modellparameter
+# Standardwerte für die Modellparameter
 if 'model_type' not in st.session_state:
     st.session_state.model_type = "Random Forest"
 if 'n_estimators' not in st.session_state:
@@ -43,6 +42,7 @@ if 'n_estimators' not in st.session_state:
 if 'max_depth' not in st.session_state:
     st.session_state.max_depth = 5
 
+# Beispieldatensätze für die Buttons in der Sidebar
 example_data = {
     "Adelie": {
         'culmen_length': 38.8, 'culmen_depth': 18.3, 'flipper_length': 190.0,
@@ -58,6 +58,7 @@ example_data = {
     }
 }
 
+# Funktion, um die Eingabefelder (im Session State) mit Beispieldaten zu füllen
 def load_example(species):
     data = example_data[species]
     st.session_state.culmen_length = data['culmen_length']
@@ -67,29 +68,31 @@ def load_example(species):
     st.session_state.island = data['island']
     st.session_state.sex = data['sex']
 
+# Laden und Vorverarbeiten der Pinguin-Daten beim Start
 try:
     X, y = preprocess_penguin_data('penguins_size.csv')
 except FileNotFoundError:
+    # Kritischer Fehler, wenn die Datendatei fehlt
     st.error("FEHLER: Die Datei 'penguins_size.csv' wurde nicht gefunden. Stellen Sie sicher, dass sie sich im selben Verzeichnis befindet.")
     st.stop()
 
-# =========================================================================
-# Sidebar
-# =========================================================================
+# Definition der Streamlit Sidebar (Eingabefelder und Buttons)
 
 st.sidebar.header("🚀 Beispiel-Pinguine")
+# Buttons zum Laden von Beispielen
 st.sidebar.button("Adelie-Beispiel laden", on_click=load_example, args=("Adelie",), width="stretch")
 st.sidebar.button("Gentoo-Beispiel laden", on_click=load_example, args=("Gentoo",), width="stretch")
 st.sidebar.button("Chinstrap-Beispiel laden", on_click=load_example, args=("Chinstrap",), width="stretch")
 st.sidebar.divider()
 
+# Ein Formular bündelt alle Eingaben und verhindert einen Rerun bei jeder Änderung
 with st.sidebar.form(key='eingabe_formular'):
     st.header("📊 Pinguin-Messwerte")
 
     island_options = ["Biscoe", "Dream", "Torgersen"]
     sex_options = ["MALE", "FEMALE"]
 
-    # Widgets lesen ihren Standardwert aus dem session_state
+    # Die Widgets verwenden die Werte aus dem Session State als Standard
     culmen_length_form = st.slider("Schnabellänge (mm)", 30.0, 60.0, st.session_state.culmen_length, 0.1)
     culmen_depth_form = st.slider("Schnabeltiefe (mm)", 13.0, 22.0, st.session_state.culmen_depth, 0.1)
     flipper_length_form = st.slider("Flossenlänge (mm)", 170.0, 230.0, st.session_state.flipper_length, 1.0)
@@ -100,18 +103,19 @@ with st.sidebar.form(key='eingabe_formular'):
     st.header("🤖 Modell-Einstellungen")
     model_type_form = st.selectbox("Modell-Typ", ["Random Forest", "Entscheidungsbaum"], index=0 if st.session_state.model_type == "Random Forest" else 1)
 
+    # Bedingte Anzeige von Hyperparametern je nach Modellwahl
     if model_type_form == "Random Forest":
         n_estimators_form = st.slider("Anzahl der Bäume", 10, 200, st.session_state.n_estimators, 10)
         max_depth_form = st.slider("Maximale Baumtiefe", 3, 10, st.session_state.max_depth, 1)
     else:
-        n_estimators_form = 100 # Standardwert, wird nicht verwendet
+        n_estimators_form = 100 # Dummy-Wert, wird nicht verwendet
         max_depth_form = st.slider("Maximale Baumtiefe", 3, 10, st.session_state.max_depth, 1)
     
     submitted = st.form_submit_button("Starte Analyse und Vorhersage")
 
-# FIX 2: Wenn das Formular abgeschickt wird...
+# Logik, die ausgeführt wird, wenn der 'Submit'-Button gedrückt wird
 if submitted:
-    # ...speichern wir alle Werte aus dem Formular im session_state...
+    # Alle Werte aus dem Formular werden in den Session State übertragen
     st.session_state.culmen_length = culmen_length_form
     st.session_state.culmen_depth = culmen_depth_form
     st.session_state.flipper_length = flipper_length_form
@@ -122,63 +126,67 @@ if submitted:
     st.session_state.n_estimators = n_estimators_form
     st.session_state.max_depth = max_depth_form
     
-    # ...und setzen das Flag, dass die Analyse laufen soll.
+    # Setzt das Flag, um den Haupt-Analyseblock unten auszulösen
     st.session_state.analysis_run = True
 
-
+# Hilfsfunktion, um die Benutzereingaben in einen DataFrame mit One-Hot-Encoding umzuwandeln
 def create_input_dataframe(culmen_length, culmen_depth, flipper_length, 
                            body_mass, island, sex, feature_columns):
+    # Erstellt einen leeren DataFrame mit den korrekten Spalten (aus den Trainingsdaten)
     input_data = pd.DataFrame(0, index=[0], columns=feature_columns, dtype=float)
     input_data['culmen_length_mm'] = culmen_length
     input_data['culmen_depth_mm'] = culmen_depth
     input_data['flipper_length_mm'] = flipper_length
     input_data['body_mass_g'] = body_mass
     
+    # Setzt die entsprechende One-Hot-Spalte für 'island'
     island_col = f'island_{island}'
     if island_col in feature_columns:
         input_data[island_col] = 1
     
+    # Setzt die entsprechende One-Hot-Spalte für 'sex'
     sex_col = f'sex_{sex}'
     if sex_col in feature_columns:
         input_data[sex_col] = 1
     
     return input_data
 
-# =========================================================================
-# Haupt-Analyseblock
-# =========================================================================
+# Hauptteil der Anwendung: Wird nur ausgeführt, wenn das Formular abgeschickt wurde
 
-# FIX 3: Die Analyse wird jetzt ausgeführt, wenn das Flag im session_state True ist.
-# Das bleibt auch True, wenn der Slider in Tab 3 bewegt wird.
+# Dieser Block wird nur ausgeführt, wenn 'analysis_run' (durch Formular-Submit) True ist
 if st.session_state.analysis_run:
     
-    # Modell-Objekt basierend auf Werten im session_state erstellen
+    # Modell-Instanziierung basierend auf der Auswahl im Session State
     if st.session_state.model_type == "Random Forest":
         model = RandomForestClassifier(n_estimators=st.session_state.n_estimators, max_depth=st.session_state.max_depth, random_state=42)
-        n_estimators = st.session_state.n_estimators # für Anzeige-Logik
+        n_estimators = st.session_state.n_estimators 
         model_type = "Random Forest"
     else:
         model = DecisionTreeClassifier(max_depth=st.session_state.max_depth, random_state=42)
         n_estimators = 1 # Dummy-Wert
         model_type = "Entscheidungsbaum"
 
+    # Training des Modells mit den geladenen Daten (X, y)
     with st.spinner("Modell wird trainiert..."):
         model.fit(X, y)
 
-    # Input-Daten basierend auf Werten im session_state erstellen
+    # Erstellen des One-Hot-kodierten Input-DataFrames für die Vorhersage
     input_data = create_input_dataframe(
         st.session_state.culmen_length, st.session_state.culmen_depth, st.session_state.flipper_length, 
         st.session_state.body_mass, st.session_state.island, st.session_state.sex, 
         X.columns
     )
 
+    # Ein ausklappbarer Bereich zur Überprüfung der Feature-Namen und Input-Werte
     with st.expander("🔍 Debug-Info - Feature-Spalten"):
         st.write("**Trainings-Features:**", X.columns.tolist())
         st.write("**Input-Daten-Spalten:**", input_data.columns.tolist())
         st.write("**Input-Daten:**")
         st.dataframe(input_data)
 
+    # Durchführung der Vorhersage
     prediction = model.predict(input_data)
+    # Abrufen der Wahrscheinlichkeiten für jede Klasse
     prediction_proba = model.predict_proba(input_data)
 
     st.header("🎯 Vorhersage-Ergebnis")
@@ -186,6 +194,7 @@ if st.session_state.analysis_run:
     species_names = model.classes_
     predicted_species = prediction[0]
 
+    # Anzeige der Ergebnisse in Metriken
     col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Vorhergesagte Art", predicted_species)
@@ -194,6 +203,7 @@ if st.session_state.analysis_run:
     with col3:
         st.metric("Modell-Typ", model_type)
 
+    # Visualisierung der Vorhersagewahrscheinlichkeiten als Balkendiagramm
     st.subheader("Wahrscheinlichkeitsverteilung")
     prob_df = pd.DataFrame({
         'Art': species_names,
@@ -209,12 +219,14 @@ if st.session_state.analysis_run:
     with tab1:
         st.subheader("Baumstruktur (Matplotlib)")
         
+        # Beim Random Forest wird standardmäßig nur der erste Baum angezeigt
         if model_type == "Random Forest":
             tree_to_plot = model.estimators_[0]
             st.info(f"Zeige den ersten Baum des Random Forest (von {n_estimators} Bäumen)")
         else:
             tree_to_plot = model
         
+        # Zeichnen des Baums mit Matplotlib (plot_tree)
         fig, ax = plt.subplots(figsize=(25, 15))
         plot_tree(tree_to_plot,
                   feature_names=X.columns.tolist(),
@@ -230,6 +242,7 @@ if st.session_state.analysis_run:
         st.pyplot(fig)
         plt.close()
         
+        # Erstellen eines Download-Buttons für das Baum-Bild
         buf = io.BytesIO()
         fig.savefig(buf, format='png', dpi=300, bbox_inches='tight')
         buf.seek(0)
@@ -244,11 +257,13 @@ if st.session_state.analysis_run:
         st.subheader("Graphviz-Visualisierung")
         st.write("Professionelle Baumvisualisierung mit besserem Layout:")
         
+        # Auswahl des Baums (erster für RF, sonst der einzelne Baum)
         if model_type == "Random Forest":
             tree_to_export = model.estimators_[0]
         else:
             tree_to_export = model
         
+        # Exportieren der Baumstruktur in das DOT-Format (für Graphviz)
         dot_data = export_graphviz(
             tree_to_export,
             out_file=None,
@@ -262,30 +277,31 @@ if st.session_state.analysis_run:
             proportion=True
         )
         
+        # Rendern des DOT-Strings mit Graphviz
         graph = graphviz.Source(dot_data)
         st.graphviz_chart(graph, width="stretch")
         
         st.info("💡 Tipp: Rechtsklick und 'Bild in neuem Tab öffnen' für eine größere Ansicht")
 
     with tab3:
+        # Dieser Tab ist nur für Random Forest aktiv
         if model_type == "Random Forest":
             st.subheader("Einzelne Bäume des Forests erkunden")
             st.write(f"Ihr Random Forest enthält {n_estimators} Entscheidungsbäume. Jeder Baum sieht die Daten leicht unterschiedlich.")
             
-            # FIX 4: Dieser Slider löst jetzt einen Rerun aus,
-            # aber da 'analysis_run' True bleibt, wird die Seite
-            # einfach mit dem neuen Slider-Wert neu gezeichnet.
+            # Slider zur Auswahl eines einzelnen Baums aus dem Forest
             tree_index = st.slider(
                 "Baum zur Visualisierung auswählen", 
                 0, 
                 len(model.estimators_) - 1, 
                 0,
-                key="tree_index_slider", # Wichtig: Ein key speichert den Wert
+                key="tree_index_slider", # Der Key stellt sicher, dass der Wert des Sliders erhalten bleibt
                 help="Jeder Baum im Forest kann unterschiedliche Entscheidungen treffen"
             )
             
             st.write(f"**Zeige Baum #{tree_index + 1}**")
             
+            # Zeichnen des ausgewählten Baums
             fig, ax = plt.subplots(figsize=(25, 15))
             plot_tree(model.estimators_[tree_index],
                       feature_names=X.columns.tolist(),
@@ -300,6 +316,7 @@ if st.session_state.analysis_run:
             st.pyplot(fig)
             plt.close()
             
+            # Anzeigen von Metriken für den ausgewählten Baum
             tree = model.estimators_[tree_index].tree_
             st.write(f"**Baum-Statistiken:**")
             col1, col2, col3 = st.columns(3)
@@ -313,6 +330,7 @@ if st.session_state.analysis_run:
         else:
             st.info("🌳 Diese Option ist nur für Random Forest-Modelle verfügbar. Wechseln Sie in der Seitenleiste zu 'Random Forest', um mehrere Bäume zu erkunden.")
 
+    # Anzeige der Feature Importances des trainierten Modells
     st.header("📊 Merkmalswichtigkeit")
     st.write("Welche Merkmale sind am wichtigsten für die Vorhersage der Pinguinart?")
 
@@ -324,6 +342,7 @@ if st.session_state.analysis_run:
         'Wichtigkeit': feature_importance
     }).sort_values('Wichtigkeit', ascending=False)
 
+    # Aufteilung in Diagramm und Tabelle
     col1, col2 = st.columns([2, 1])
     with col1:
         st.bar_chart(importance_df.set_index('Merkmal'))
@@ -331,14 +350,14 @@ if st.session_state.analysis_run:
         st.dataframe(importance_df.style.format({'Wichtigkeit': '{:.4f}'}))
 
 else:
+    # Info-Text, der angezeigt wird, bevor das Formular abgeschickt wurde
     st.info("Passen Sie die Werte in der Seitenleiste an (oder laden Sie ein Beispiel) und klicken Sie auf 'Starte Analyse und Vorhersage', um ein Ergebnis zu erhalten.")
 
 
-# =========================================================================
-# Hilfetext
-# =========================================================================
+# Hilfssektion am Ende der Seite
 st.header("📖 Wie man den Entscheidungsbaum liest")
 
+# Ein ausklappbarer Bereich (Expander) mit Erklärungen
 with st.expander("Klicken Sie hier, um zu erfahren, wie man die Baumvisualisierung interpretiert"):
     st.markdown("""
     ### Die Baumstruktur verstehen
