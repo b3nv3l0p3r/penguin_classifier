@@ -15,6 +15,10 @@ This project aims to build classification models to identify penguin species bas
 - Visualization
 - Installation and Requirements
 
+### Link to the Streamlit app and presentation
+- [Presentation](https://presentation.pasgri-cloud.de/)
+- [Streamlit-Application](https://pinguin.pasgri-cloud.de/)
+
 ## Data Description
 
 The dataset includes the following features:
