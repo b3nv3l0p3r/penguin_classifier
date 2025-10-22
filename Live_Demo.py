@@ -78,9 +78,9 @@ except FileNotFoundError:
 # =========================================================================
 
 st.sidebar.header("🚀 Beispiel-Pinguine")
-st.sidebar.button("Adelie-Beispiel laden", on_click=load_example, args=("Adelie",), use_container_width=True)
-st.sidebar.button("Gentoo-Beispiel laden", on_click=load_example, args=("Gentoo",), use_container_width=True)
-st.sidebar.button("Chinstrap-Beispiel laden", on_click=load_example, args=("Chinstrap",), use_container_width=True)
+st.sidebar.button("Adelie-Beispiel laden", on_click=load_example, args=("Adelie",), width="stretch")
+st.sidebar.button("Gentoo-Beispiel laden", on_click=load_example, args=("Gentoo",), width="stretch")
+st.sidebar.button("Chinstrap-Beispiel laden", on_click=load_example, args=("Chinstrap",), width="stretch")
 st.sidebar.divider()
 
 with st.sidebar.form(key='eingabe_formular'):
@@ -263,7 +263,7 @@ if st.session_state.analysis_run:
         )
         
         graph = graphviz.Source(dot_data)
-        st.graphviz_chart(graph, use_container_width=True)
+        st.graphviz_chart(graph, width="stretch")
         
         st.info("💡 Tipp: Rechtsklick und 'Bild in neuem Tab öffnen' für eine größere Ansicht")
 
@@ -368,12 +368,3 @@ with st.expander("Klicken Sie hier, um zu erfahren, wie man die Baumvisualisieru
     ### Merkmalswichtigkeit
     Merkmale, die weiter oben im Baum erscheinen, sind im Allgemeinen wichtiger für die Klassifizierung.
     """)
-
-st.markdown("""
----
-### 🚀 Nächste Schritte
-- Passen Sie die Eingabewerte in der Seitenleiste an, um andere Vorhersagen zu sehen
-- Erkunden Sie verschiedene Bäume im Random Forest (falls ausgewählt)
-- Laden Sie die Baumvisualisierung zur Dokumentation herunter
-- Wechseln Sie zwischen den Modell-Typen "Random Forest" und "Entscheidungsbaum"
-""")

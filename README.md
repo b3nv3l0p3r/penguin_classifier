@@ -138,7 +138,7 @@ pip install -r requirements.txt
 4. Start Streamlit-App
 
 ``
-streamlit run .\test_page.py
+streamlit run .\Live_Demo.py
 ``
 
 ## Contributors
